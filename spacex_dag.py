@@ -22,7 +22,8 @@ for myrocket in rocketlist:
         bash_command="python3 /root/airflow/dags/spacex/load_launches.py -y {{ execution_date.year }} -o /var/data -r "+myrocket, 
         dag=dag
     )
-    myparams.clear()
+    if myparams:
+        myparams.clear()
     myparams = {"rocket": myrocket}
     t2 = BashOperator(
         task_id="print_data", 
