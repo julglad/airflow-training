@@ -24,7 +24,7 @@ t1 = BashOperator(
 
 t2 = BashOperator(
     task_id="print_data", 
-    bash_command="cat /var/data/year={{ execution_date.year }}/rocket={{ myrocket }}/data.csv", 
+    bash_command="cat /var/data/year={{ execution_date.year }}/rocket={{ params.rocket }}/data.csv", 
     params={"rocket": "falcon1"}, # falcon1/falcon9/falconheavy
     dag=dag
 )
