@@ -31,5 +31,5 @@ for i in range(4):
         dag=dag
     )
 
-    t1 >> t2
+ t1 >> t2
 
