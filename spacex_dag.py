@@ -17,7 +17,7 @@ default_args = {
 dag = DAG("spacex", default_args=default_args, schedule_interval="0 0 1 1 *")
 rocketlist = ["all", "falcon1","falcon9","falconheavy"]
 for myrocket in rocketlist:
-    if myrocket = "all":
+    if myrocket == "all":
         r = ""
     else:
         r =  " -r " + myrocket
