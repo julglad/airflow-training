@@ -16,7 +16,10 @@ default_args = {
 
 dag = DAG("spacex", default_args=default_args, schedule_interval="0 0 1 1 *")
 rocketlist = ["all", "falcon1","falcon9","falconheavy"]
-r = " -r " + myrocket if myrocket != 'all' else ""
+if myrocket != 'all':
+    r = " -r " + myrocket
+else:
+    r = ""
 for myrocket in rocketlist:
     t1 = BashOperator(
         task_id="get_data_" + myrocket, 
