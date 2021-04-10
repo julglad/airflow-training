@@ -23,20 +23,6 @@ tasks  = {'billing': 'created_at',
           'payment': 'pay_date',
           'traffic': 'from_unixtime(`timestamp` DIV 1000)'}
 
-ods=[]
-for task, partcolumn in tasks.items():
-    query = 'insert overwrite table ygladkikh.ods_' + task + " partition (year='{{ execution_date.year }}') " \
-            'select * from ygladkikh.stg_'+ task + ' where year(' + partcolumn + ') = {{ execution_date.year }};'
-    ods.append(DataProcHiveOperator(
-        task_id='ods_'+task,
-        dag=dag,
-        query=query,
-        cluster_name='cluster-dataproc',
-        job_name=USERNAME + '_ods_'+task+'_{{ execution_date.year }}_{{ params.job_suffix }}',
-        params={"job_suffix": randint(0, 100000)},
-        region='europe-west3',
-    ))
-
 dm_traffic= DataProcHiveOperator(
     task_id='dm_traffic',
     dag=dag,
@@ -53,4 +39,17 @@ dm_traffic= DataProcHiveOperator(
     region='europe-west3',
 )
 
-#ods >> dm_traffic
+for task, partcolumn in tasks.items():
+    query = 'insert overwrite table ygladkikh.ods_' + task + " partition (year='{{ execution_date.year }}') " \
+            'select * from ygladkikh.stg_'+ task + ' where year(' + partcolumn + ') = {{ execution_date.year }};'
+    ods = DataProcHiveOperator(
+        task_id='ods_'+task,
+        dag=dag,
+        query=query,
+        cluster_name='cluster-dataproc',
+        job_name=USERNAME + '_ods_'+task+'_{{ execution_date.year }}_{{ params.job_suffix }}',
+        params={"job_suffix": randint(0, 100000)},
+        region='europe-west3',
+    )
+    if task == 'traffic':
+        ods >> dm_traffic
