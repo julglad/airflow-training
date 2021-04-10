@@ -28,7 +28,7 @@ for task, partcolumn in tasks.items():
     query = 'insert overwrite table ygladkikh.ods_' + task + " partition (year='{{ execution_date.year }}') " \
             'select * from ygladkikh.stg_'+ task + ' where year(' + partcolumn + ') = {{ execution_date.year }};'
     ods.append(DataProcHiveOperator(
-        task_id='ods'+task,
+        task_id='ods_'+task,
         dag=dag,
         query=query,
         cluster_name='cluster-dataproc',
