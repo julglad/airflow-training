@@ -53,4 +53,4 @@ dm_traffic= DataProcHiveOperator(
     region='europe-west3',
 )
 
-ods >> dm_traffic
+#ods >> dm_traffic
