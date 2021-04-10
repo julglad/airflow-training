@@ -29,9 +29,9 @@ dm_traffic= DataProcHiveOperator(
     query="""
         insert overwrite table ygladkikh.dm_bytes_received partition (year='{{ execution_date.year }}') 
         select user_id, max(bytes_received), min(bytes_received), ceil(avg(bytes_received)) 
-        from ygladkikh.ods_traffic 
-        group by user_id
-        where year(created_at) = {{ execution_date.year }};
+        from ygladkikh.ods_traffic         
+        where year(created_at) = {{ execution_date.year }}
+        group by user_id;
     """,
     cluster_name='cluster-dataproc',
     job_name=USERNAME + '_dm_traffic_{{ execution_date.year }}_{{ params.job_suffix }}',
