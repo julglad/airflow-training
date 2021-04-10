@@ -27,7 +27,7 @@ dm_traffic= DataProcHiveOperator(
     task_id='dm_traffic',
     dag=dag,
     query="""
-        insert overwrite table ygladkikh.dm_bytes_received partition (year='{{ execution_date.year }}') 
+        insert overwrite table ygladkikh.dm_traffic partition (year='{{ execution_date.year }}') 
         select user_id, max(bytes_received), min(bytes_received), ceil(avg(bytes_received)) 
         from ygladkikh.ods_traffic         
         where year(created_at) = {{ execution_date.year }}
