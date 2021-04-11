@@ -20,26 +20,26 @@ dag = DAG(
     schedule_interval="0 0 1 1 *",
 )
 
-tasks = {'billing': '''
+tasks = {'billing': """
                     insert overwrite table ygladkikh.ods_billing partition (year='{{ execution_date.year }}') 
                     select *  
                     from ygladkikh.stg_billing where year(created_at) = {{ execution_date.year }};
-        ''',
-         'issue': '''
+        """,
+         'issue': """
                     insert overwrite table ygladkikh.ods_issue partition (year='{{ execution_date.year }}')                    
                     select * 
                     from ygladkikh.stg_issue where year(start_time)) = {{ execution_date.year }};         
-          ''',
-         'payment': '''
+          """,
+         'payment': """
                     insert overwrite table ygladkikh.ods_payment partition (year='{{ execution_date.year }}')                    
                     select *
                     from ygladkikh.stg_payment where year(pay_date) = {{ execution_date.year }};           
-          ''',
-         'traffic': '''
+          """,
+         'traffic': """
                     insert overwrite table ygladkikh.ods_traffic partition (year='{{ execution_date.year }}')                    
                     select * 
                     from ygladkikh.stg_traffic where year(from_unixtime(`timestamp` DIV 1000)) = {{ execution_date.year }};            
-          '''}
+          """}
 
 dm_traffic = DataProcHiveOperator(
     task_id='dm_traffic',
