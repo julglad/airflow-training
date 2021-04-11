@@ -67,4 +67,6 @@ for task, query in tasks.items():
         params={"job_suffix": randint(0, 100000)},
         region='europe-west3',
     )
-ods >> dm_traffic
+    if task == 'traffic':
+    ods >> dm_traffic
+
