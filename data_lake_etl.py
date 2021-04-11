@@ -83,7 +83,7 @@ ods_billing = DataProcHiveOperator(
         from
             ygladkikh.stg_billing
         where
-            year(cast(`created_at` as TIMESTAMP)) = {{ execution_date.year }}
+            year(cast(`created_at` as TIMESTAMP)) = {{ execution_date.year }};
     ''',
     cluster_name='cluster-dataproc',
     job_name=USERNAME + '_ods_billing_{{ execution_date.year }}_{{ params.job_suffix }}',
