@@ -40,8 +40,7 @@ dm_traffic= DataProcHiveOperator(
 )
 
 for task, partcolumn in tasks.items():
-    query = 'insert overwrite table ygladkikh.ods_' + task + " partition (year='{{ execution_date.year }}') " \
-            'select * from ygladkikh.stg_'+ task + ' where year(' + partcolumn + ') = {{ execution_date.year }};'
+    query = 'insert overwrite table ygladkikh.ods_' + task + " partition (year='{{ execution_date.year }}') select * from ygladkikh.stg_"+ task + ' where year(' + partcolumn + ') = {{ execution_date.year }};'
     ods = DataProcHiveOperator(
         task_id='ods_'+task,
         dag=dag,
