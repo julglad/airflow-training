@@ -68,5 +68,5 @@ for task, query in tasks.items():
         region='europe-west3',
     )
     if task == 'traffic':
-    ods >> dm_traffic
+        ods >> dm_traffic
 
