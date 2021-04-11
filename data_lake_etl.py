@@ -31,3 +31,15 @@ ods_traffic = DataProcHiveOperator(
     params={"job_suffix": randint(0, 100000)},
     region='europe-west3',
 )
+ods_issue = DataProcHiveOperator(
+    task_id='ods_issue',
+    dag=dag,
+    query="""
+        insert overwrite table ygladkikh.ods_issue partition (year='{{ execution_date.year }}') 
+        select * from ygladkikh.stg_issue where year(start_time) = {{ execution_date.year }};
+    """,
+    cluster_name='cluster-dataproc',
+    job_name=USERNAME + '_ods_issue_{{ execution_date.year }}_{{ params.job_suffix }}',
+    params={"job_suffix": randint(0, 100000)},
+    region='europe-west3',
+)
