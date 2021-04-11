@@ -8,7 +8,9 @@ USERNAME = 'ygladkikh'
 
 default_args = {
     'owner': USERNAME,
-    'start_date': datetime(2013, 1, 1, 0, 0, 0)
+    'start_date': datetime(2013, 1, 1, 0, 0, 0),
+    'email': ['agateglad@gmail.com'],
+    'email_on_failure': True,    
 }
 
 dag = DAG(
@@ -20,18 +22,18 @@ dag = DAG(
 
 tasks = {'billing': '''
                     insert overwrite table ygladkikh.ods_billing partition (year='{{ execution_date.year }}') 
-                    select cast(user_id as BIGINT), billing_period, service, tariff, cast(sum as DECIMAL(10,2)), cast(created_at as TIMESTAMP)  
-                    from ygladkikh.stg_billing where year(cast(created_at as date)) = {{ execution_date.year }};
+                    select *  
+                    from ygladkikh.stg_billing where year(cast(`created_at` as TIMESTAMP)) = {{ execution_date.year }};
         ''',
          'issue': '''
                     insert overwrite table ygladkikh.ods_issue partition (year='{{ execution_date.year }}')                    
-                    select cast(user_id as BIGINT), cast(start_time as TIMESTAMP), cast(end_time as TIMESTAMP), title, description, service 
-                    from ygladkikh.stg_issue where year(cast(start_time as date)) = {{ execution_date.year }};         
+                    select * 
+                    from ygladkikh.stg_issue where year(cast(`start_time` AS TIMESTAMP)) = {{ execution_date.year }};         
           ''',
          'payment': '''
                     insert overwrite table ygladkikh.ods_payment partition (year='{{ execution_date.year }}')                    
-                    select cast(user_id as BIGINT), pay_doc_type, cast(pay_doc_num as BIGINT), account, phone, billing_period, cast(pay_date as TIMESTAMP), cast(sum as DECIMAL(10,2)) 
-                    from ygladkikh.stg_payment where year(cast(pay_date as date)) = {{ execution_date.year }};           
+                    select *
+                    from ygladkikh.stg_payment where year(cast(`pay_date` as DATE)) = {{ execution_date.year }};           
           ''',
          'traffic': '''
                     insert overwrite table ygladkikh.ods_traffic partition (year='{{ execution_date.year }}')                    
