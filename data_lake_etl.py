@@ -8,7 +8,7 @@ USERNAME = 'ygladkikh'
 
 default_args = {
     'owner': USERNAME,
-    'start_date': datetime(2013, 1, 1, 0, 0, 0)
+    'start_date': datetime(2020, 1, 1, 0, 0, 0)
 }
 
 dag = DAG(
@@ -74,7 +74,7 @@ ods_billing = DataProcHiveOperator(
     query="""
          insert overwrite table ygladkikh.ods_billing partition (year='{{ execution_date.year }}') 
                             select cast(user_id as BIGINT), billing_period, service, tariff, cast(sum as DECIMAL(10,2)), cast(created_at as TIMESTAMP)  
-                            from ygladkikh.stg_billing where year(cast(created_at as date)) = {{ execution_date.year }};
+                            from ygladkikh.stg_billing where year(created_at) = {{ execution_date.year }};
             """,
     cluster_name='cluster-dataproc',
     job_name=USERNAME + '_ods_billing_{{ execution_date.year }}_{{ params.job_suffix }}',
