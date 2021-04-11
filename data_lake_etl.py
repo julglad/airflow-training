@@ -24,7 +24,7 @@ ods_traffic = DataProcHiveOperator(
     dag=dag,
     query="""
         insert overwrite table ygladkikh.ods_traffic partition (year='{{ execution_date.year }}') 
-        select * from ygladkikh.stg_traffic where year(created_at) = {{ execution_date.year }};
+        select * from ygladkikh.stg_traffic where year(from_unixtime(`timestamp` DIV 1000)) = {{ execution_date.year }};
     """,
     cluster_name='cluster-dataproc',
     job_name=USERNAME + '_ods_traffic_{{ execution_date.year }}_{{ params.job_suffix }}',
