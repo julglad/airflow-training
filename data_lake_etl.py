@@ -18,9 +18,9 @@ dag = DAG(
     schedule_interval="0 0 1 1 *",
 )
 
-tasks  = {'billing': 'created_at',
-          'issue': 'start_time',
-          'payment': 'pay_date',
+tasks  = {'billing': 'cast(created_at as date)',
+          'issue': 'cast(start_time as date)',
+          'payment': 'cast(pay_date as date)',
           'traffic': 'from_unixtime(`timestamp` DIV 1000)'}
 
 dm_traffic= DataProcHiveOperator(
