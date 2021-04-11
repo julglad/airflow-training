@@ -23,17 +23,17 @@ dag = DAG(
 tasks = {'billing': '''
                     insert overwrite table ygladkikh.ods_billing partition (year='{{ execution_date.year }}') 
                     select *  
-                    from ygladkikh.stg_billing where year(cast(`created_at` as TIMESTAMP)) = {{ execution_date.year }};
+                    from ygladkikh.stg_billing where year(created_at) = {{ execution_date.year }};
         ''',
          'issue': '''
                     insert overwrite table ygladkikh.ods_issue partition (year='{{ execution_date.year }}')                    
                     select * 
-                    from ygladkikh.stg_issue where year(cast(`start_time` AS TIMESTAMP)) = {{ execution_date.year }};         
+                    from ygladkikh.stg_issue where year(start_time)) = {{ execution_date.year }};         
           ''',
          'payment': '''
                     insert overwrite table ygladkikh.ods_payment partition (year='{{ execution_date.year }}')                    
                     select *
-                    from ygladkikh.stg_payment where year(cast(`pay_date` as DATE)) = {{ execution_date.year }};           
+                    from ygladkikh.stg_payment where year(pay_date) = {{ execution_date.year }};           
           ''',
          'traffic': '''
                     insert overwrite table ygladkikh.ods_traffic partition (year='{{ execution_date.year }}')                    
