@@ -51,7 +51,6 @@ tables = {'billing': '''
 
 
 for table, query in tables.items():
-
     ods = DataProcHiveOperator(
         task_id='ods_%s' % table,
         dag=dag,
