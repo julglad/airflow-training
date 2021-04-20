@@ -13,7 +13,7 @@ default_args = {
 }
 
 dag = DAG(
-    USERNAME + '_dwh_dv_etl',
+    USERNAME + '_dwh_etl',
     default_args=default_args,
     description='RTDE. DV 2.0',
     schedule_interval="0 0 1 1 *"
