@@ -174,7 +174,7 @@ dds_sat_payment_details = PostgresOperator(
         ),
         update_records AS (
             SELECT a.pay_pk, a.payment_hashdiff, a.pay_doc_num, a.sum, a.effective_from, a.load_date, a.record_source
-            FROM "rtk_de"."ygladkikh"."sat_payment_details" as a
+            FROM "rtk_de"."ygladkikh"."dds_sat_payment_details" as a
             JOIN source_data as b
             ON a.pay_pk = b.pay_pk AND a.load_date <= (SELECT max(load_date) from source_data)
         ),
