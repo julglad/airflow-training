@@ -9,7 +9,7 @@ USERNAME = 'ygladkikh'
 
 default_args = {
     'owner': USERNAME,
-    'start_date': datetime(2012, 1, 1, 0, 0, 0),
+    'start_date': datetime(2020, 1, 1, 0, 0, 0),
     'depends_on_past': True
 }
 
