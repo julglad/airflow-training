@@ -139,7 +139,7 @@ dds_sat_user_details = PostgresOperator(
         ),
         update_records AS (
             SELECT a.user_pk, a.user_hashdiff, a.phone, a.effective_from, a.load_date, a.record_source
-            FROM "rtk_de"."ygladkikh"."sat_user_details" as a
+            FROM "rtk_de"."ygladkikh"."dds_sat_user_details" as a
             JOIN source_data as b
             ON a.user_pk = b.user_pk AND a.load_date <= (SELECT max(load_date) from source_data)
         ),
