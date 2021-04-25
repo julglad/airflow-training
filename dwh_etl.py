@@ -33,7 +33,7 @@ fill_ods = PostgresOperator(
     dag=dag,
     sql="""
         INSERT INTO ygladkikh.ods_payment(user_id,pay_doc_type,pay_doc_num,account,phone,billing_period,pay_date,sum)
-        SELECT user_id,pay_doc_type text,pay_doc_num,account,phone,billing_period::DATE,pay_date::DATE,sum FROM ygladkikh.stg_payment 
+        SELECT user_id,pay_doc_type,pay_doc_num,account,phone,billing_period::DATE,pay_date::DATE,sum FROM ygladkikh.stg_payment 
         WHERE EXTRACT(YEAR FROM pay_date::DATE) = {{ execution_date.year }}
     """
 )
