@@ -131,7 +131,7 @@ dds_sat_user_details = PostgresOperator(
     task_id="dds_sat_user_details",
     dag=dag,
     sql="""
-        INSERT INTO "rtk_de"."ygladkikh"."sat_user_details" ("user_pk", "user_hashdiff", "phone", "effective_from", "load_date", "record_source")
+        INSERT INTO "rtk_de"."ygladkikh"."dds_sat_user_details" ("user_pk", "user_hashdiff", "phone", "effective_from", "load_date", "record_source")
         WITH source_data AS (
             SELECT a.user_pk, a.user_hashdiff, a.phone, a.effective_from, a.load_date, a.record_source
             FROM "rtk_de"."ygladkikh"."ods_payment_hashed" AS a
