@@ -110,7 +110,7 @@ dag = DAG(
     max_active_runs=1,
 )
 
-load_payment_report_tmp_one_year = PostgresOperator(
+load_payment_report_tmp = PostgresOperator(
     task_id='LOAD_PAYMENT_REPORT_TMP',
     dag=dag,
     sql=SQL_CONTEXT['LOAD_PAYMENT_REPORT_TMP']
