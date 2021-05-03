@@ -6,7 +6,8 @@ from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.dummy_operator import DummyOperator
 
 
-username = 'ygladkikh'
+USERNAME = 'ygladkikh'
+
 default_args = {
     'owner': USERNAME,
     'start_date': datetime(2013, 1, 1, 0, 0, 0),
@@ -14,7 +15,7 @@ default_args = {
 }
 
 dag = DAG(
-    username + '.dwh_payment_report_dm',
+    USERNAME = 'ygladkikh' + '.dwh_payment_report_dm',
     default_args=default_args,
     description='DWH Payment Report DM',
     schedule_interval="0 0 1 1 *",
