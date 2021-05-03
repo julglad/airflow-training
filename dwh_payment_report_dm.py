@@ -6,7 +6,7 @@ from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.dummy_operator import DummyOperator
 
 
-USERNAME = 'ygladkikh'
+username = 'ygladkikh'
 default_args = {
     'owner': USERNAME,
     'start_date': datetime(2013, 1, 1, 0, 0, 0),
