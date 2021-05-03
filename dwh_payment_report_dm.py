@@ -119,7 +119,7 @@ load_payment_report_tmp = PostgresOperator(
 all_dims_loaded = DummyOperator(task_id="all_dims_loaded", dag=dag)
 all_facts_loaded = DummyOperator(task_id="all_facts_loaded", dag=dag)
 
-drop_payment_report_tmp_one_year = PostgresOperator(
+drop_payment_report_tmp = PostgresOperator(
     task_id='DROP_PAYMENT_REPORT_TMP',
     dag=dag,
     sql=SQL_CONTEXT['DROP_PAYMENT_REPORT_TMP']
