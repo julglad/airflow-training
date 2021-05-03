@@ -5,8 +5,27 @@ from airflow import DAG
 from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.dummy_operator import DummyOperator
 
-SQL_CONTEXT = {
-    'LOAD_PAYMENT_REPORT_TMP': """
+
+USERNAME = 'ygladkikh'
+default_args = {
+    'owner': USERNAME,
+    'start_date': datetime(2013, 1, 1, 0, 0, 0),
+    'depends_on_past': False
+}
+
+dag = DAG(
+    username + '.dwh_payment_report_dm',
+    default_args=default_args,
+    description='DWH Payment Report DM',
+    schedule_interval="0 0 1 1 *",
+    concurrency=1,
+    max_active_runs=1,
+)
+
+fill_payment_report_tmp = PostgresOperator(
+    task_id='fill_payment_report_tmp',
+    dag=dag,
+    sql="""
            create table ygladkikh.payment_report_tmp_{{ execution_date.year }} as
               with raw_data as (
                 select 
@@ -26,103 +45,90 @@ SQL_CONTEXT = {
               from raw_data
               group by billing_year, legal_type, district, registration_year, is_vip
               order by billing_year, legal_type, district, registration_year, is_vip;
-    """,
-    'DIMENSIONS': {
-            'DIM_BILLING_YEAR':  """      
-                    insert into ygladkikh.payment_report_dim_billing_year(billing_year_key)
-                    select distinct billing_year as billing_year_key 
-                    from ygladkikh.payment_report_tmp_{{ execution_date.year }} tmp
-                    left join ygladkikh.payment_report_dim_billing_year by on by.billing_year_key = tmp.billing_year
-                    where by.billing_year_key is null;
-            """,
-            'DIM_LEGAL_TYPE':  """
-                    insert into ygladkikh.payment_report_dim_legal_type(legal_type_key)
-                    select distinct legal_type as legal_type_key 
-                    from ygladkikh.payment_report_tmp_{{ execution_date.year }} tmp
-                    left join ygladkikh.payment_report_dim_legal_type lt on lt.legal_type_key = tmp.legal_type
-                    where lt.legal_type_key is null;
-            """,
-            'DIM_DISTRICT':  """
-                    insert into ygladkikh.payment_report_dim_district(district_key)
-                    select distinct district as district_key 
-                    from ygladkikh.payment_report_tmp_{{ execution_date.year }} tmp
-                    left join ygladkikh.payment_report_dim_district d on d.district_key = tmp.district
-                    where d.district_key is null;
-            """,
-            'DIM_REGISTRATION_YEAR':  """
-                    insert into ygladkikh.payment_report_dim_registration_year(registration_year_key)
-                    select distinct registration_year as registration_year_key 
-                    from ygladkikh.payment_report_tmp_{{ execution_date.year }} tmp
-                    left join ygladkikh.payment_report_dim_registration_year ry on ry.registration_year_key = tmp.registration_year
-                    where ry.registration_year_key is null;
-            """},
-    'FACTS': {
-            'REPORT_FACT':  """
-                    insert into ygladkikh.payment_report_fct(
-                                billing_year_id,
-                                legal_type_id,
-                                district_id,
-                                registration_year_id,
-                                is_vip,
-                                sum 
-                            )
-                    select biy.id, lt.id, d.id, ry.id, is_vip, raw.sum
-                    from ygladkikh.payment_report_tmp_{{ execution_date.year }} raw
-                    join ygladkikh.payment_report_dim_billing_year biy on raw.billing_year = biy.billing_year_key
-                    join ygladkikh.payment_report_dim_legal_type lt on raw.legal_type = lt.legal_type_key
-                    join ygladkikh.payment_report_dim_district d on raw.district = d.district_key
-                    join ygladkikh.payment_report_dim_registration_year ry on raw.registration_year = ry.registration_year_key; 
-            """},
-    'DROP_PAYMENT_REPORT_TMP': """
-          drop table if exists ygladkikh.payment_report_tmp_{{ execution_date.year }};
-     """
-}
-
-def get_phase_context(task_phase):
-    tasks = []
-    for task in SQL_CONTEXT[task_phase]:
-        query = SQL_CONTEXT[task_phase][task]
-        tasks.append(PostgresOperator(
-            task_id='dm_{}_{}'.format(task_phase, task),
-            dag=dag,
-            sql=query
-        ))
-    return tasks
-
-username = 'ygladkikh'
-default_args = {
-    'owner': username,
-    'depends_on_past': False,
-    'start_date': datetime(2013, 1, 1, 0, 0, 0),
-    'email': ['airflow@example.com'],
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'retries': 1,
-    'retry_delay': timedelta(seconds=120),
-}
-
-dag = DAG(
-    username + '.dwh_payment_report_dm',
-    default_args=default_args,
-    description='DWH Payment Report DM',
-    schedule_interval="0 0 1 1 *",
-    concurrency=1,
-    max_active_runs=1,
+    """
 )
 
-load_payment_report_tmp = PostgresOperator(
-    task_id='LOAD_PAYMENT_REPORT_TMP',
+dm_dim_billing_year = PostgresOperator(
+    task_id="dm_dim_billing_year",
     dag=dag,
-    sql=SQL_CONTEXT['LOAD_PAYMENT_REPORT_TMP']
+    sql="""      
+            insert into ygladkikh.payment_report_dim_billing_year(billing_year_key)
+            select distinct billing_year as billing_year_key 
+            from ygladkikh.payment_report_tmp_{{ execution_date.year }} tmp
+            left join ygladkikh.payment_report_dim_billing_year by on by.billing_year_key = tmp.billing_year
+            where by.billing_year_key is null;
+            """
+)
+dm_dim_legal_type  = PostgresOperator(
+    task_id="dm_dim_legal_type",
+    dag=dag,
+    sql="""
+            insert into ygladkikh.payment_report_dim_legal_type(legal_type_key)
+            select distinct legal_type as legal_type_key 
+            from ygladkikh.payment_report_tmp_{{ execution_date.year }} tmp
+            left join ygladkikh.payment_report_dim_legal_type lt on lt.legal_type_key = tmp.legal_type
+            where lt.legal_type_key is null;
+            """
+)
+dm_dim_district  = PostgresOperator(
+    task_id="dm_dim_district",
+    dag=dag,
+    sql="""
+            insert into ygladkikh.payment_report_dim_district(district_key)
+            select distinct district as district_key 
+            from ygladkikh.payment_report_tmp_{{ execution_date.year }} tmp
+            left join ygladkikh.payment_report_dim_district d on d.district_key = tmp.district
+            where d.district_key is null;
+            """
+)
+
+dm_dim_registration_year  = PostgresOperator(
+    task_id="dm_dim_registration_year",
+    dag=dag,
+    sql="""
+            insert into ygladkikh.payment_report_dim_registration_year(registration_year_key)
+            select distinct registration_year as registration_year_key 
+            from ygladkikh.payment_report_tmp_{{ execution_date.year }} tmp
+            left join ygladkikh.payment_report_dim_registration_year ry on ry.registration_year_key = tmp.registration_year
+            where ry.registration_year_key is null;
+            """
 )
 
 all_dims_loaded = DummyOperator(task_id="all_dims_loaded", dag=dag)
-all_facts_loaded = DummyOperator(task_id="all_facts_loaded", dag=dag)
 
-drop_payment_report_tmp = PostgresOperator(
-    task_id='DROP_PAYMENT_REPORT_TMP',
+
+fill_payment_report_tmp >> dm_dim_billing_year >> all_dims_loaded
+fill_payment_report_tmp >> dm_dim_legal_type >> all_dims_loaded
+fill_payment_report_tmp >> dm_dim_district >> all_dims_loaded
+fill_payment_report_tmp >> dm_dim_registration_year >> all_dims_loaded
+
+dm_fct  = PostgresOperator(
+    task_id="dm_fct",
     dag=dag,
-    sql=SQL_CONTEXT['DROP_PAYMENT_REPORT_TMP']
+    sql="""
+            insert into ygladkikh.payment_report_fct(
+                        billing_year_id,
+                        legal_type_id,
+                        district_id,
+                        registration_year_id,
+                        is_vip,
+                        sum 
+                    )
+            select biy.id, lt.id, d.id, ry.id, is_vip, raw.sum
+            from ygladkikh.payment_report_tmp_{{ execution_date.year }} raw
+            join ygladkikh.payment_report_dim_billing_year biy on raw.billing_year = biy.billing_year_key
+            join ygladkikh.payment_report_dim_legal_type lt on raw.legal_type = lt.legal_type_key
+            join ygladkikh.payment_report_dim_district d on raw.district = d.district_key
+            join ygladkikh.payment_report_dim_registration_year ry on raw.registration_year = ry.registration_year_key; 
+            """
 )
 
-load_payment_report_tmp >> get_phase_context('DIMENSIONS') >> all_dims_loaded >> get_phase_context('FACTS') >> all_facts_loaded >>  drop_payment_report_tmp
+drop_payment_report_tmp = PostgresOperator(
+    task_id='drop_payment_report_tmp',
+    dag=dag,
+    sql="""
+          drop table if exists ygladkikh.payment_report_tmp_{{ execution_date.year }};
+     """
+)
+all_dims_loaded >> dm_fct >>  drop_payment_report_tmp
+
