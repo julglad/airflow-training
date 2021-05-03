@@ -15,7 +15,7 @@ default_args = {
 }
 
 dag = DAG(
-    USERNAME = 'ygladkikh' + '.dwh_payment_report_dm',
+    USERNAME  + '.dwh_payment_report_dm',
     default_args=default_args,
     description='DWH Payment Report DM',
     schedule_interval="0 0 1 1 *",
