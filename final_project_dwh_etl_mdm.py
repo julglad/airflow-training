@@ -71,8 +71,8 @@ dds_hub_user = PostgresOperator(
     """
 )
 
-dds_hub_pay_doc_type = PostgresOperator(
-    task_id="dds_hub_pay_doc_type",
+dds_hub_legal_type = PostgresOperator(
+    task_id="dds_hub_legal_type",
     dag=dag,
     sql="""
         INSERT INTO "rtk_de"."ygladkikh"."project_dds_hub_legal_type" 
@@ -80,16 +80,16 @@ dds_hub_pay_doc_type = PostgresOperator(
     """
 )
 
-dds_hub_billing_period = PostgresOperator(
-    task_id="dds_hub_billing_period",
+dds_hub_district = PostgresOperator(
+    task_id="dds_hub_district",
     dag=dag,
     sql="""
-        INSERT INTO "rtk_de"."ygladkikh"."project_dds_hub_district_period" 
+        INSERT INTO "rtk_de"."ygladkikh"."project_dds_hub_district" 
         SELECT * FROM "rtk_de"."ygladkikh"."project_view_hub_district_mdm_etl"
     """
 )
-dds_hub_account = PostgresOperator(
-    task_id="dds_hub_account",
+dds_hub_billing_mode = PostgresOperator(
+    task_id="dds_hub_billing_mode",
     dag=dag,
     sql="""
         INSERT INTO "rtk_de"."ygladkikh"."project_dds_hub_billing_mode"   
@@ -99,9 +99,9 @@ dds_hub_account = PostgresOperator(
 
 all_hubs_loaded = DummyOperator(task_id="all_hubs_loaded", dag=dag)
 ods_loaded >> dds_hub_user >> all_hubs_loaded
-ods_loaded >> dds_hub_pay_doc_type >> all_hubs_loaded
-ods_loaded >> dds_hub_billing_period >> all_hubs_loaded
-ods_loaded >> dds_hub_account >> all_hubs_loaded
+ods_loaded >> dds_hub_legal_type >> all_hubs_loaded
+ods_loaded >> dds_hub_district >> all_hubs_loaded
+ods_loaded >> dds_hub_billing_mode >> all_hubs_loaded
 
 dds_link_payment = PostgresOperator(
     task_id="dds_link_payment",
