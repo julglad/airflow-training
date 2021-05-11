@@ -68,7 +68,7 @@ dds_hub_user = PostgresOperator(
     sql="""
         INSERT INTO "rtk_de"."ygladkikh"."project_dds_hub_user" 
         SELECT *
-        FROM "rtk_de"."ygladkikh"."project_view_hub_user_etl"
+        FROM "rtk_de"."ygladkikh"."project_view_hub_user_payment_etl"
     """
 )
 
@@ -77,7 +77,7 @@ dds_hub_pay_doc_type = PostgresOperator(
     dag=dag,
     sql="""
         INSERT INTO "rtk_de"."ygladkikh"."project_dds_hub_pay_doc_type" 
-        SELECT * FROM "rtk_de"."ygladkikh"."project_view_hub_pay_doc_type_etl"
+        SELECT * FROM "rtk_de"."ygladkikh"."project_view_hub_pay_doc_type_payment_etl"
     """
 )
 
@@ -86,7 +86,7 @@ dds_hub_billing_period = PostgresOperator(
     dag=dag,
     sql="""
         INSERT INTO "rtk_de"."ygladkikh"."project_dds_hub_billing_period" 
-        SELECT * FROM "rtk_de"."ygladkikh"."project_view_hub_billing_period_etl"
+        SELECT * FROM "rtk_de"."ygladkikh"."project_view_hub_billing_period_payment_etl"
     """
 )
 dds_hub_account = PostgresOperator(
@@ -94,7 +94,7 @@ dds_hub_account = PostgresOperator(
     dag=dag,
     sql="""
         INSERT INTO "rtk_de"."ygladkikh"."project_dds_hub_account"   
-        SELECT * FROM "rtk_de"."ygladkikh"."project_view_hub_account_etl"
+        SELECT * FROM "rtk_de"."ygladkikh"."project_view_hub_account_payment_etl"
     """
 )
 
