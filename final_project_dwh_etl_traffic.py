@@ -81,7 +81,7 @@ dds_hub_device = PostgresOperator(
     """
 )
 
-dds_hub_billing_period = PostgresOperator(
+dds_hub_ip_addr = PostgresOperator(
     task_id="dds_hub_ip_addr",
     dag=dag,
     sql="""
