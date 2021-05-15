@@ -96,7 +96,7 @@ ods_loaded >> dds_hub_device >> all_hubs_loaded
 ods_loaded >> dds_hub_ip_addr >> all_hubs_loaded
 
 
-dds_link_payment = PostgresOperator(
+dds_link_traffic = PostgresOperator(
     task_id="dds_link_traffic",
     dag=dag,
     sql="""
