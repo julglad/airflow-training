@@ -81,20 +81,9 @@ dds_hub_device = PostgresOperator(
     """
 )
 
-dds_hub_ip_addr = PostgresOperator(
-    task_id="dds_hub_ip_addr",
-    dag=dag,
-    sql="""
-        INSERT INTO "rtk_de"."ygladkikh"."project_dds_hub_ip_addr" 
-        SELECT * FROM "rtk_de"."ygladkikh"."project_view_hub_ip_addr_traffic_etl"
-    """
-)
-
 all_hubs_loaded = DummyOperator(task_id="all_hubs_loaded", dag=dag)
 ods_loaded >> dds_hub_user >> all_hubs_loaded
 ods_loaded >> dds_hub_device >> all_hubs_loaded
-ods_loaded >> dds_hub_ip_addr >> all_hubs_loaded
-
 
 dds_link_traffic = PostgresOperator(
     task_id="dds_link_traffic",
@@ -110,7 +99,6 @@ all_hubs_loaded >> dds_link_traffic
 all_links_loaded = DummyOperator(task_id="all_links_loaded", dag=dag)
 
 dds_link_traffic >> all_links_loaded
-
 
 dds_sat_traffic_details = PostgresOperator(
     task_id="dds_sat_traffic_details",
@@ -148,4 +136,41 @@ dds_sat_traffic_details = PostgresOperator(
     """
 )
 
+dds_sat_device_details = PostgresOperator(
+    task_id="dds_sat_device_details",
+    dag=dag,
+    sql="""
+        INSERT INTO rtk_de.ygladkikh.project_dds_sat_device_details(device_pk, device_hashdiff, device_ip_addr, effective_from, load_date, record_source)
+        WITH source_data AS (
+            SELECT a.device_pk, a.device_hashdiff, a.device_ip_addr,  a.effective_from, a.load_date, a.record_source
+            FROM rtk_de.ygladkikh.project_ods_traffic_hashed AS a
+            WHERE a.load_date = '{{ execution_date }}'::TIMESTAMP
+        ),
+        update_records AS (
+            SELECT a.device_pk, a.device_hashdiff, a.device_ip_addr, a.effective_from, a.load_date, a.record_source
+            FROM rtk_de.ygladkikh.project_dds_sat_device_details as a
+            JOIN source_data as b
+            ON a.device_pk = b.device_pk AND a.load_date <= (SELECT max(load_date) from source_data)
+        ),
+        latest_records AS (
+            SELECT * FROM (
+                SELECT c.device_pk, c.device_hashdiff, c.load_date,
+                    CASE WHEN RANK() OVER (PARTITION BY c.device_pk ORDER BY c.load_date DESC) = 1
+                    THEN 'Y' ELSE 'N' END AS latest
+                FROM update_records as c
+            ) as s
+            WHERE latest = 'Y'
+        ),
+        records_to_insert AS (
+            SELECT DISTINCT e.device_pk, e.device_hashdiff, e.device_ip_addr, e.effective_from, e.load_date, e.record_source
+            FROM source_data AS e
+            LEFT JOIN latest_records
+            ON latest_records.device_hashdiff = e.device_hashdiff AND latest_records.device_pk = e.device_pk
+            WHERE latest_records.device_hashdiff IS NULL
+        )
+        SELECT * FROM records_to_insert
+    """
+)
+
 all_links_loaded >> dds_sat_traffic_details
+all_links_loaded >> dds_sat_device_details
