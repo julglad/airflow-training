@@ -34,7 +34,7 @@ fill_ods = PostgresOperator(
     dag=dag,
     sql="""
         INSERT INTO ygladkikh.project_ods_billing
-        SELECT 	* 
+        SELECT 	user_id,billing_period,	service,tariff,sum::decimal(10,2),created_at::timestamp 
         FROM ygladkikh.project_stg_billing 
         WHERE EXTRACT(YEAR FROM created_at::timestamp) = {{ execution_date.year }}
     """
