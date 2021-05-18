@@ -124,7 +124,7 @@ dm_fct  = PostgresOperator(
             """
 )
 
-drop_project_report_tmp = PostgresOperator(
+drop_payment_report_tmp = PostgresOperator(
     task_id='drop_project_report_tmp',
     dag=dag,
     sql="""
