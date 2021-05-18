@@ -98,10 +98,10 @@ dm_dim_registration_year  = PostgresOperator(
 all_dims_loaded = DummyOperator(task_id="all_dims_loaded", dag=dag)
 
 
-fill_project_report_tmp >> dm_dim_billing_year >> all_dims_loaded
-fill_project_report_tmp >> dm_dim_legal_type >> all_dims_loaded
-fill_project_report_tmp >> dm_dim_district >> all_dims_loaded
-fill_project_report_tmp >> dm_dim_registration_year >> all_dims_loaded
+fill_report_tmp >> dm_dim_billing_year >> all_dims_loaded
+fill_report_tmp >> dm_dim_legal_type >> all_dims_loaded
+fill_report_tmp >> dm_dim_district >> all_dims_loaded
+fill_report_tmp >> dm_dim_registration_year >> all_dims_loaded
 
 dm_fct  = PostgresOperator(
     task_id="dm_fct",
