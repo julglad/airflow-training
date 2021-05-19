@@ -113,7 +113,7 @@ raw_data as(
 		join ygladkikh.project_dds_hub_district hd on hd.district_pk = lm.district_pk
         where billing.billing_year = {{ execution_date.year }}
 		)
-select billing_year, legal_type, district, billing_mode,registration_year, is_vip, sum(payment_sum), sum(billing_sum), sum(issue_cnt), sum(traffic_amount)
+select billing_year, legal_type, district, billing_mode,registration_year, is_vip, sum(payment_sum) payment_sum, sum(billing_sum) billing_sum, sum(issue_cnt) issue_cnt, sum(traffic_amount) traffic_amount
 from raw_data
 group by billing_year, legal_type, district, billing_mode,registration_year, is_vip
 order by billing_year, legal_type, district, billing_mode,registration_year, is_vip;
