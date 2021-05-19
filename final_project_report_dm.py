@@ -204,7 +204,7 @@ dm_fct  = PostgresOperator(
                         issue_cnt, 
                         traffic_amount 
                     )
-            select biy.id, lt.id, d.id, ry.id, is_vip, payment_sum, billing_sum, issue_cnt, traffic_amount
+            select biy.id, lt.id, d.id, bim.id,ry.id, is_vip, payment_sum, billing_sum, issue_cnt, traffic_amount
             from ygladkikh.project_report_tmp_{{ execution_date.year }} raw
             join ygladkikh.project_report_dim_billing_year biy on raw.billing_year = biy.billing_year_key
             join ygladkikh.project_report_dim_legal_type lt on raw.legal_type = lt.legal_type_key
