@@ -158,7 +158,7 @@ dm_dim_billing_mode  = PostgresOperator(
     task_id="dm_dim_billing_mode",
     dag=dag,
     sql="""
-            insert into ygladkikh.project_report_dim_billing_mode(district_key)
+            insert into ygladkikh.project_report_dim_billing_mode(billing_mode_key)
             select distinct billing_mode as billing_mode_key 
             from ygladkikh.project_report_tmp_{{ execution_date.year }} tmp
             left join ygladkikh.project_report_dim_billing_mode d on d.billing_mode_key = tmp.billing_mode
