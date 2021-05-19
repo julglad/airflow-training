@@ -162,7 +162,7 @@ dm_dim_billing_mode  = PostgresOperator(
             select distinct billing_mode as billing_mode_key 
             from ygladkikh.project_report_tmp_{{ execution_date.year }} tmp
             left join ygladkikh.project_report_dim_billing_mode d on d.billing_mode_key::text = tmp.billing_mode
-            where d.district_key is null;
+            where d.billing_mode_key is null;
             """
 )
 
