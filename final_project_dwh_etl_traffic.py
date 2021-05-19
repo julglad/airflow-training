@@ -104,14 +104,14 @@ dds_sat_traffic_details = PostgresOperator(
     task_id="dds_sat_traffic_details",
     dag=dag,
     sql="""
-        INSERT INTO rtk_de.ygladkikh.project_dds_sat_traffic_details(traffic_pk, traffic_hashdiff, bytes_sent, bytes_received,effective_from, load_date, record_source)
+        INSERT INTO rtk_de.ygladkikh.project_dds_sat_traffic_details(traffic_pk, traffic_hashdiff, time_stamp,bytes_sent, bytes_received,effective_from, load_date, record_source)
         WITH source_data AS (
-            SELECT a.traffic_pk, a.traffic_hashdiff, a.bytes_sent, a.bytes_received, a.effective_from, a.load_date, a.record_source
+            SELECT a.traffic_pk, a.traffic_hashdiff, time_stamp, a.bytes_sent, a.bytes_received, a.effective_from, a.load_date, a.record_source
             FROM rtk_de.ygladkikh.project_ods_traffic_hashed AS a
             WHERE a.load_date = '{{ execution_date }}'::TIMESTAMP
         ),
         update_records AS (
-            SELECT a.traffic_pk, a.traffic_hashdiff, a.bytes_sent, a.bytes_received, a.effective_from, a.load_date, a.record_source
+            SELECT a.traffic_pk, a.traffic_hashdiff, a.time_stamp, a.bytes_sent, a.bytes_received, a.effective_from, a.load_date, a.record_source
             FROM rtk_de.ygladkikh.project_dds_sat_traffic_details as a
             JOIN source_data as b
             ON a.traffic_pk = b.traffic_pk AND a.load_date <= (SELECT max(load_date) from source_data)
@@ -126,7 +126,7 @@ dds_sat_traffic_details = PostgresOperator(
             WHERE latest = 'Y'
         ),
         records_to_insert AS (
-            SELECT DISTINCT e.traffic_pk, e.traffic_hashdiff, e.bytes_sent, e.bytes_received, e.effective_from, e.load_date, e.record_source
+            SELECT DISTINCT e.traffic_pk, e.traffic_hashdiff, e.time_stamp, e.bytes_sent, e.bytes_received, e.effective_from, e.load_date, e.record_source
             FROM source_data AS e
             LEFT JOIN latest_records
             ON latest_records.traffic_hashdiff = e.traffic_hashdiff AND latest_records.traffic_pk = e.traffic_pk
