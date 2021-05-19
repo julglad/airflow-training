@@ -27,7 +27,7 @@ fill_report_tmp = PostgresOperator(
     task_id='fill_report_tmp',
     dag=dag,
     sql="""
-create table ygladkikh.payment_report_tmp_{{ execution_date.year }} as
+create table ygladkikh.project_report_tmp_{{ execution_date.year }} as
 with payment as
 (
 with raw_data as (
